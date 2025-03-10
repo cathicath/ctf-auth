@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Forgotten Temple</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            background: url('/static/background.webp') no-repeat center center fixed;
+            background-size: cover;
+            color: #e6cfb8d6;
+            font-family: "IM Fell English SC", serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            display: flex;
+            max-width: 900px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.5);
+        }
+        .text-section {
+            flex: 1;
+            padding-right: 20px;
+        }
+        .form-section {
+            flex: 1;
+            background: rgba(30, 20, 10, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        h1 {
+            font-size: 2.2em;
+            text-shadow: 2px 2px 4px black;
+        }
+        p {
+            font-size: 1.2em;
+            text-shadow: 1px 1px 2px black;
+        }
+        input, button {
+            font-size: 1em;
+            padding: 10px;
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
+            width: 100%;
+        }
+        input {
+            background: rgba(255, 255, 255, 0.8);
+        }
+        button {
+            background: #9d8169;
+            color: #E0C4A8;
+            border: 1px solid #6f5d4d;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #6f5d4d;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Vänster sektion: Story -->
+        <div class="text-section">
+            <h1>The Forgotten Temple</h1>
+            <p>
+                Lost in the shifting sands of time, you stumble upon a crumbling temple, its entrance sealed by an ancient mechanism.  
+            </p>
+            <p>
+                Among the carvings, a guardian's name emerges: <strong>Anubis</strong>. Below, a faded inscription reads: <br> 
+                <em>"The gatekeeper stands watch, bound to protect its secrets. Speak his oath, and he shall grant you passage."</em>  
+            </p>
+            <p>
+                A barely legible sequence follows: <strong>deathgod123</strong>.
+            </p>
+            <p>
+                Yet, he is only the guardian. Its true ruler remains hidden, locked behind ancient wards.<br><strong>Who once ruled this sacred place?</strong>
+            </p>
+            <p>
+                But even if you uncover the name, how will you gain entry? The temple’s keepers left behind a way to reset its wards—but their arrogance may have left a flaw.
+            </p>
+
+
+            <a href="{{ url_for('static', filename='usernames.txt') }}" download>
+                <button class="download-btn">The Scroll of Gods</button>
+            </a>
+        </div>
+
+        <!-- Höger sektion: Login + Password Reset (endast för Anubis) -->
+        <div class="form-section">
+            {% if error %}
+                <p style="color: red;">{{ error }}</p>
+            {% endif %}
+
+            <!-- LOGIN FORM -->
+            {% if "user" not in session %}
+                <form method="POST">
+                    <label>Username:</label>
+                    <input type="text" name="username" required><br>
+                    <label>Password:</label>
+                    <input type="password" name="password" required><br>
+                    <button type="submit">Enter the Temple</button>
+                </form>
+            {% else %}
+                {% if session["user"] == "Anubis" %}
+                    <p><strong>Welcome Anubis, keeper of keys.</strong></p>
+
+                    <form id="resetForm">
+                        <h3>Reset Password</h3>
+                        <input type="hidden" id="resetUsername" value="{{ session['user'] }}">
+                        <label>New Password:</label>
+                        <input type="password" id="newPassword" required><br>
+                        <button type="submit">Reset Password</button>
+                    </form>
+
+                    <p id="resetMessage"></p>
+
+                    <a href="{{ url_for('logout') }}"><button class="logout-btn">Leave the Temple</button></a>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        document.getElementById("resetForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            let username = document.getElementById("resetUsername").value;
+            let newPassword = document.getElementById("newPassword").value;
+
+            fetch("/reset-password", {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: `username=${username}&new_password=${newPassword}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("resetMessage").innerText = data.message;
+                if (data.success) {
+                    document.getElementById("resetForm").classList.add("hidden");
+                }
+            });
+        });
+
+
+    </script>
+
+</body>
+</html>
