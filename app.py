@@ -3,10 +3,9 @@ from flask import Flask, render_template, request, redirect, url_for, session, j
 app = Flask(__name__)
 app.secret_key = "supersecretkey"
 
-# Simulerad "databas" med flera användare (endast en är giltig)
 USERS = {
-    "Anubis": "deathgod123",  # Spelarens konto
-    "Khonsu": "moonlight123",  # Målet att hacka
+    "Anubis": "deathgod123",
+    "Khonsu": "moonlight123",
 }
 
 @app.route("/", methods=["GET", "POST"])
@@ -21,9 +20,9 @@ def login():
                 session["user"] = username
 
                 if username == "Khonsu":
-                    return redirect(url_for("account"))  # Endast Khonsu skickas till account
+                    return redirect(url_for("account"))
 
-                return render_template("index.html")  # Anubis stannar på index
+                return render_template("index.html")
             else:
                 error = "Incorrect password"
         else:
@@ -39,10 +38,10 @@ def account():
 
 @app.route("/reset-password", methods=["POST"])
 def reset_password():
-    if "user" not in session:  # Blockera om användaren inte är inloggad
+    if "user" not in session:
         return jsonify({"success": False, "message": "You must be logged in to reset a password."}), 403
 
-    username = request.form.get("username")  # Användarnamnet tas från requesten
+    username = request.form.get("username")
     new_password = request.form.get("new_password")
 
     if username in USERS:
