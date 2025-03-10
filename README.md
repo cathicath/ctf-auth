@@ -1,2 +1,2 @@
-# ctf-auth
-CTF authentication challenge with username and password enumeration
+# CTF authentication challenge
+
